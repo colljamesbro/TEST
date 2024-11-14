@@ -1,0 +1,46 @@
+using UnityEngine;
+
+public class SelectionBoxAllPlayers : MonoBehaviour
+{
+    public Color selectionBoxColor = Color.green;  // Customize the selection box color
+    public Vector3 boxOffset = new Vector3(0, 1, 0);  // Offset for the selection box position
+    public Vector3 boxSize = new Vector3(1.5f, 2f, 1.5f);  // Size of the selection box
+
+    void Start()
+    {
+        // Find all players tagged as "Player"
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        // Loop through each player to add a selection box
+        foreach (GameObject player in players)
+        {
+            // Add an empty GameObject to serve as the selection box
+            GameObject selectionBox = new GameObject("SelectionBox");
+            selectionBox.transform.SetParent(player.transform);
+            selectionBox.transform.localPosition = boxOffset;
+
+            // Add a BoxCollider component to define the selection box area
+            BoxCollider boxCollider = selectionBox.AddComponent<BoxCollider>();
+            boxCollider.size = boxSize;
+            boxCollider.isTrigger = true;  // Set as trigger so it doesn't interfere with physics
+
+            // Add a LineRenderer to visually show the box outline
+            LineRenderer lineRenderer = selectionBox.AddComponent<LineRenderer>();
+            lineRenderer.positionCount = 4;
+            lineRenderer.startColor = selectionBoxColor;
+            lineRenderer.endColor = selectionBoxColor;
+            lineRenderer.loop = true;  // Connect the line to form a box
+            lineRenderer.useWorldSpace = false;
+            lineRenderer.widthMultiplier = 0.05f;
+
+            // Define box vertices for the selection box outline
+            Vector3[] boxCorners = new Vector3[4];
+            boxCorners[0] = new Vector3(-boxSize.x / 2, -boxSize.y / 2, -boxSize.z / 2);
+            boxCorners[1] = new Vector3(boxSize.x / 2, -boxSize.y / 2, -boxSize.z / 2);
+            boxCorners[2] = new Vector3(boxSize.x / 2, -boxSize.y / 2, boxSize.z / 2);
+            boxCorners[3] = new Vector3(-boxSize.x / 2, -boxSize.y / 2, boxSize.z / 2);
+
+            lineRenderer.SetPositions(boxCorners);
+        }
+    }
+}
